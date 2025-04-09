@@ -1,0 +1,14 @@
+{
+  "name": "blys-project",
+  "version": "1.0.0",
+  "description": "simple authentication and tasks management project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "MERN"
+  ],
+  "author": "Sashank Baral",
+  "license": "ISC"
+}
