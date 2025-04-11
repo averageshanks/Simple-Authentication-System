@@ -50,3 +50,22 @@ export const deleteTask = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+export const updateTask = async (req, res) => {
+  try {
+    const { title, description } = req.body;
+    const [result] = await pool.query(
+      'UPDATE tasks SET title = ?, description = ? WHERE id = ? AND user_id = ?',
+      [title, description, req.params.id, req.user.id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+
+    res.json({ message: 'Task updated successfully' });
+  } catch (error) {
+    console.error('Update task error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};

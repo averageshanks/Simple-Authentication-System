@@ -1,5 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { checkDBConnection } from './config/db.js';
 import authRoutes from './routes/auth.routes.js';
@@ -17,12 +18,18 @@ const startServer = async () => {
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
 
+  app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+  }));
+
   // ✅ Diagnostic route
   app.get('/ping', (req, res) => res.send('pong'));
 
   // ✅ Auth routes
   app.use('/api/auth', authRoutes);
   app.use('/api/tasks', taskRoutes);
+
 
   // ✅ Error handler
   app.use((err, req, res, next) => {
