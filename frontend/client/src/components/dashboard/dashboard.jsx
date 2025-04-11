@@ -155,60 +155,45 @@ const Dashboard = () => {
       )}
 
       <DragDropContext onDragEnd={onDragEnd}>
-        <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
-          {statuses.map((status) => (
-            <Droppable droppableId={status} key={status}>
+      <div className="kanban-columns">
+  {statuses.map((status) => (
+    <Droppable droppableId={status} key={status}>
+      {(provided) => (
+        <div
+          className="kanban-column"
+          ref={provided.innerRef}
+          {...provided.droppableProps}
+        >
+          <h3>{status.toUpperCase()}</h3>
+          {columns[status].map((task, index) => (
+            <Draggable
+              key={task.id.toString()}
+              draggableId={task.id.toString()}
+              index={index}
+            >
               {(provided) => (
                 <div
+                  className="task-card"
                   ref={provided.innerRef}
-                  {...provided.droppableProps}
-                  style={{
-                    background: '#f4f4f4',
-                    padding: '1rem',
-                    width: '300px',
-                    minHeight: '400px',
-                    borderRadius: '8px',
-                  }}
+                  {...provided.draggableProps}
+                  {...provided.dragHandleProps}
+                  style={provided.draggableProps.style}
                 >
-                  <h3>{status.toUpperCase()}</h3>
-                  {columns[status].map((task, index) => (
-                    <Draggable
-                      key={task.id.toString()}
-                      draggableId={task.id.toString()}
-                      index={index}
-                    >
-                      {(provided) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          style={{
-                            background: 'white',
-                            padding: '1rem',
-                            marginBottom: '1rem',
-                            borderRadius: '6px',
-                            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                            ...provided.draggableProps.style,
-                          }}
-                        >
-                          <b>{task.title}</b>
-                          <p>{task.description}</p>
-                          <button onClick={() => handleEditClick(task)}>
-                            ✏️
-                          </button>
-                          <button onClick={() => handleDeleteTask(task.id)}>
-                            🗑️
-                          </button>
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
+                  <b>{task.title}</b>
+                  <p>{task.description}</p>
+                  <button onClick={() => handleEditClick(task)}>✏️</button>
+                  <button onClick={() => handleDeleteTask(task.id)}>🗑️</button>
                 </div>
               )}
-            </Droppable>
+            </Draggable>
           ))}
+          {provided.placeholder}
         </div>
+      )}
+    </Droppable>
+  ))}
+</div>
+
       </DragDropContext>
 
       <button
