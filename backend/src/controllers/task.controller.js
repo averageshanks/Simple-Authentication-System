@@ -15,17 +15,19 @@ export const getTasks = async (req, res) => {
 
 export const createTask = async (req, res) => {
   try {
-    const { title, description } = req.body;
+    const { title, description, status = 'todo' } = req.body;
     
     const [result] = await pool.query(
-      'INSERT INTO tasks (user_id, title, description) VALUES (?, ?, ?)',
-      [req.user.id, title, description]
+      'INSERT INTO tasks (user_id, title, description, status) VALUES (?, ?, ?, ?)',
+      [req.user.id, title, description, status]
     );
+    
 
     res.status(201).json({
       id: result.insertId,
       title,
-      description
+      description,
+      status
     });
   } catch (error) {
     console.error('Create task error:', error);
@@ -53,11 +55,13 @@ export const deleteTask = async (req, res) => {
 
 export const updateTask = async (req, res) => {
   try {
-    const { title, description } = req.body;
+    const { title, description, status } = req.body;
+
     const [result] = await pool.query(
-      'UPDATE tasks SET title = ?, description = ? WHERE id = ? AND user_id = ?',
-      [title, description, req.params.id, req.user.id]
+      'UPDATE tasks SET title = ?, description = ?, status = ? WHERE id = ? AND user_id = ?',
+      [title, description, status, req.params.id, req.user.id]
     );
+    
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'Task not found' });

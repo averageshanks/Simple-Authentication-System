@@ -6,12 +6,13 @@ import Landingpage from './components/landingpage/landingpage';
 import Dashboard from './components/dashboard/dashboard';
 import ProtectedRoute from './components/protectedRoute/ProtectedRoute';
 
+
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Landingpage />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+      {/* <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} /> */}
 
       {/* Protected Dashboard Route */}
       <Route

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import './Login.css'; // ⬅️ Import the CSS file
 
 const Login = () => {
   const navigate = useNavigate();
@@ -13,17 +14,14 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
     try {
       const res = await axios.post('http://localhost:3000/api/auth/login', formData, {
-        withCredentials: true, // if using cookies
+        withCredentials: true,
       });
 
       const { token } = res.data;
-
-      // Save the token (localStorage or cookie depending on your setup)
       localStorage.setItem('token', token);
-
-      // ✅ Redirect to dashboard
       navigate('/dashboard');
     } catch (err) {
       setError('Invalid credentials');
@@ -31,26 +29,39 @@ const Login = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="email"
-        name="email"
-        placeholder="Email"
-        value={formData.email}
-        onChange={handleChange}
-        required
-      />
-      <input
-        type="password"
-        name="password"
-        placeholder="Password"
-        value={formData.password}
-        onChange={handleChange}
-        required
-      />
-      <button type="submit">Login</button>
-      {error && <p>{error}</p>}
-    </form>
+    <div className="login-container">
+      <form className="login-form" onSubmit={handleSubmit}>
+        <h2 className="login-title">Login</h2>
+
+        <div className="form-group">
+          <label>Email</label>
+          <input
+            type="email"
+            name="email"
+            placeholder="you@example.com"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Password</label>
+          <input
+            type="password"
+            name="password"
+            placeholder="••••••••"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        {error && <div className="error-message">{error}</div>}
+
+        <button type="submit" className="login-button">Login</button>
+      </form>
+    </div>
   );
 };
 

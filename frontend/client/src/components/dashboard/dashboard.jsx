@@ -1,18 +1,37 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+} from '@hello-pangea/dnd';
+import './dashboard.css';
+
+const statuses = ['todo', 'in-progress', 'done'];
 
 const Dashboard = () => {
-  const [tasks, setTasks] = useState([]);
+  const [columns, setColumns] = useState({
+    todo: [],
+    'in-progress': [],
+    done: [],
+  });
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState(null);
-  
 
   const fetchTasks = async () => {
     try {
-      const res = await axios.get('http://localhost:3000/api/tasks', { withCredentials: true });
-      setTasks(res.data);
+      const res = await axios.get('http://localhost:3000/api/tasks', {
+        withCredentials: true,
+      });
+      const grouped = { todo: [], 'in-progress': [], done: [] };
+      res.data.forEach((task) => {
+        const status = task.status || 'todo';
+        grouped[status].push(task);
+      });
+      setColumns(grouped);
     } catch (error) {
       console.error('Error fetching tasks:', error.message);
     }
@@ -21,41 +40,30 @@ const Dashboard = () => {
   const handleAddTask = async () => {
     if (!title) return;
     try {
-      await axios.post('http://localhost:3000/api/tasks', { title, description }, { withCredentials: true });
-      fetchTasks();
+      await axios.post(
+        'http://localhost:3000/api/tasks',
+        { title, description, status: 'todo' },
+        { withCredentials: true }
+      );
       setTitle('');
       setDescription('');
+      fetchTasks();
     } catch (error) {
-      console.error('Error adding task:', error.message);
+      console.error(
+        'Error adding task:',
+        error.response?.data || error.message
+      );
     }
   };
 
   const handleDeleteTask = async (id) => {
     try {
-      await axios.delete(`http://localhost:3000/api/tasks/${id}`, { withCredentials: true });
+      await axios.delete(`http://localhost:3000/api/tasks/${id}`, {
+        withCredentials: true,
+      });
       fetchTasks();
     } catch (error) {
       console.error('Error deleting task:', error.message);
-    }
-  };
-
-  const handleEditTask = async () => {
-    if (!title) return;
-    try {
-      const res = await axios.put(
-        `http://localhost:3000/api/tasks/${editingTaskId}`,
-        { title, description },
-        { withCredentials: true }
-      );
-      console.log(res.data.message);
-
-      setIsEditing(false);
-      setEditingTaskId(null);
-      setTitle('');
-      setDescription('');
-      fetchTasks();
-    } catch (error) {
-      console.error("Error updating task:", error.response?.data || error.message);
     }
   };
 
@@ -66,13 +74,70 @@ const Dashboard = () => {
     setDescription(task.description);
   };
 
+  const handleEditTask = async () => {
+    if (!title) return;
+    try {
+      await axios.put(
+        `http://localhost:3000/api/tasks/${editingTaskId}`,
+        { title, description },
+        { withCredentials: true }
+      );
+      setIsEditing(false);
+      setEditingTaskId(null);
+      setTitle('');
+      setDescription('');
+      fetchTasks();
+    } catch (error) {
+      console.error(
+        'Error updating task:',
+        error.response?.data || error.message
+      );
+    }
+  };
+
+  const onDragEnd = async (result) => {
+    const { source, destination, draggableId } = result;
+    if (!destination) return;
+    if (
+      source.droppableId === destination.droppableId &&
+      source.index === destination.index
+    )
+      return;
+
+    const sourceCol = [...columns[source.droppableId]];
+    const destCol = [...columns[destination.droppableId]];
+    const [movedTask] = sourceCol.splice(source.index, 1);
+    movedTask.status = destination.droppableId;
+    destCol.splice(destination.index, 0, movedTask);
+
+    setColumns({
+      ...columns,
+      [source.droppableId]: sourceCol,
+      [destination.droppableId]: destCol,
+    });
+
+    try {
+      await axios.put(
+        `http://localhost:3000/api/tasks/${draggableId}`,
+        {
+          title: movedTask.title,
+          description: movedTask.description,
+          status: movedTask.status,
+        },
+        { withCredentials: true }
+      );
+    } catch (err) {
+      console.error('Drag update failed:', err);
+    }
+  };
+
   useEffect(() => {
     fetchTasks();
   }, []);
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>Your Tasks</h2>
+    <div className="dashboard">
+      <h1>Kanban Dashboard</h1>
       <input
         value={title}
         onChange={(e) => setTitle(e.target.value)}
@@ -89,15 +154,62 @@ const Dashboard = () => {
         <button onClick={handleEditTask}>Update Task</button>
       )}
 
-      <ul>
-        {tasks.map((task) => (
-          <li key={task.id}>
-            <b>{task.title}</b> - {task.description}
-            <button onClick={() => handleEditClick(task)}>✏️ Edit</button>
-            <button onClick={() => handleDeleteTask(task.id)}>🗑️</button>
-          </li>
-        ))}
-      </ul>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
+          {statuses.map((status) => (
+            <Droppable droppableId={status} key={status}>
+              {(provided) => (
+                <div
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                  style={{
+                    background: '#f4f4f4',
+                    padding: '1rem',
+                    width: '300px',
+                    minHeight: '400px',
+                    borderRadius: '8px',
+                  }}
+                >
+                  <h3>{status.toUpperCase()}</h3>
+                  {columns[status].map((task, index) => (
+                    <Draggable
+                      key={task.id.toString()}
+                      draggableId={task.id.toString()}
+                      index={index}
+                    >
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          style={{
+                            background: 'white',
+                            padding: '1rem',
+                            marginBottom: '1rem',
+                            borderRadius: '6px',
+                            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                            ...provided.draggableProps.style,
+                          }}
+                        >
+                          <b>{task.title}</b>
+                          <p>{task.description}</p>
+                          <button onClick={() => handleEditClick(task)}>
+                            ✏️
+                          </button>
+                          <button onClick={() => handleDeleteTask(task.id)}>
+                            🗑️
+                          </button>
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          ))}
+        </div>
+      </DragDropContext>
 
       <button
         onClick={() => {

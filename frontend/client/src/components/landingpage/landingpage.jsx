@@ -15,7 +15,7 @@ export const Landingpage = (props) => {
     <div className="landingPage">
       <div className="landingWrapper">
         <nav>
-          <h3 className="navbar-weave">Weave</h3>
+          <h3 className="navbar-weave">Task Manager</h3>
           <ul className="navbar-links">
             <li>
               <a href="#" className="navbar-link">
@@ -33,13 +33,23 @@ export const Landingpage = (props) => {
               </a>
             </li>
           </ul>
+          <div className="navbar-auth-buttons">
           <button
             type="button"
-            className="navbar-signup-button"
+            className="navbar-button login"
             onClick={() => setLogin(true)}
           >
-            Sign up/ login
+            Login
           </button>
+          <button
+            type="button"
+            className="navbar-button signup"
+            onClick={() => setSignup(true)}
+          >
+            Sign up
+          </button>
+        </div>
+
         </nav>
         {/* title section */}
 
