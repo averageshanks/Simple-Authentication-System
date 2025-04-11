@@ -90,7 +90,7 @@ cd ../frontend/client
 npm install
 npm run dev
 ```
-Create a `.env` file inside `/backend`:
+Create a `.env` file inside `/frontend/client`:
 
 ```env
 VITE_API_URL = http://localhost:3000/api
