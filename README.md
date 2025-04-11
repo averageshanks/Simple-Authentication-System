@@ -90,6 +90,11 @@ cd ../frontend/client
 npm install
 npm run dev
 ```
+Create a `.env` file inside `/backend`:
+
+```env
+VITE_API_URL = http://localhost:3000/api
+```
 
 The app should now be running at `http://localhost:5173` by default.
 
