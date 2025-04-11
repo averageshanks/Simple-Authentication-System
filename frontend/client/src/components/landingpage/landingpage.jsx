@@ -5,8 +5,8 @@ import boxData from "./feature-box/box.data";
 import image from "../../assets/title-picture.png";
 import Login from "../login/login";
 import Signup from "../signup/signup";
-// import Modal from "../modal/modal";
 import { Modal } from "antd";
+
 export const Landingpage = (props) => {
   const [feature, setFeature] = useState(boxData);
   const [login, setLogin] = useState(false);

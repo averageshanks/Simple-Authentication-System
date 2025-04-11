@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import {
   DragDropContext,
   Droppable,
   Draggable,
 } from '@hello-pangea/dnd';
 import './dashboard.css';
+import axios from '../../api/axios.js'; // Adjust the import path as necessary
 
 const statuses = ['todo', 'in-progress', 'done'];
 
@@ -23,7 +23,7 @@ const Dashboard = () => {
 
   const fetchTasks = async () => {
     try {
-      const res = await axios.get('http://localhost:3000/api/tasks', {
+      const res = await axios.get('/tasks', {
         withCredentials: true,
       });
       const grouped = { todo: [], 'in-progress': [], done: [] };
@@ -41,7 +41,7 @@ const Dashboard = () => {
     if (!title) return;
     try {
       await axios.post(
-        'http://localhost:3000/api/tasks',
+        '/tasks',
         { title, description, status: 'todo' },
         { withCredentials: true }
       );
@@ -58,7 +58,7 @@ const Dashboard = () => {
 
   const handleDeleteTask = async (id) => {
     try {
-      await axios.delete(`http://localhost:3000/api/tasks/${id}`, {
+      await axios.delete(`/tasks/${id}`, {
         withCredentials: true,
       });
       fetchTasks();
@@ -78,7 +78,7 @@ const Dashboard = () => {
     if (!title) return;
     try {
       await axios.put(
-        `http://localhost:3000/api/tasks/${editingTaskId}`,
+        `/tasks/${editingTaskId}`,
         { title, description },
         { withCredentials: true }
       );
@@ -118,7 +118,7 @@ const Dashboard = () => {
 
     try {
       await axios.put(
-        `http://localhost:3000/api/tasks/${draggableId}`,
+        `/tasks/${draggableId}`,
         {
           title: movedTask.title,
           description: movedTask.description,

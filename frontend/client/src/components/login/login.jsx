@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import axios from '../../api/axios';
 import { useNavigate } from 'react-router-dom';
 import './Login.css'; // ⬅️ Import the CSS file
 
@@ -16,7 +16,7 @@ const Login = () => {
     e.preventDefault();
     setError('');
     try {
-      const res = await axios.post('http://localhost:3000/api/auth/login', formData, {
+      const res = await axios.post('/auth/login', formData, {
         withCredentials: true,
       });
 
