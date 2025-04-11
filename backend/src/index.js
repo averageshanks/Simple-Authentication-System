@@ -18,11 +18,24 @@ const startServer = async () => {
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
 
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'https://simple-authentication-system-1.onrender.com',
+  ];
+  
   app.use(cors({
-    origin: process.env.CLIENT_URL,
-    credentials: true,
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps, curl, postman)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true
   }));
-
+  
   // ✅ Diagnostic route
   app.get('/ping', (req, res) => res.send('pong'));
 
