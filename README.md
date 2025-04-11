@@ -26,23 +26,21 @@ A secure and responsive task management system using the MERN stack with MySQL a
 
 ## 📁 Project Structure
 
-### Backend (`/server`)
+### Backend (`/backend/src`)
 ```
 /config         → Database connection pool  
 /controllers    → Business logic for tasks and auth  
-/middlewares    → JWT token verification  
-/models         → DB queries for users and tasks  
+/middlewares    → JWT token verification   
 /routes         → Auth and Task route handlers  
-/utils          → Helper utilities  
+/utils          → Helper utilities 
 index.js        → Server entry point  
 ```
 
 ### Frontend (`/client`)
 ```
-/components     → KanbanCard, Board, etc.  
-/pages          → Login, Register, Dashboard  
-App.jsx         → Main structure  
-main.jsx        → Entry point  
+src/components/     → Login, Register, Dashboard  
+src/App.jsx         → Main structure  
+src/main.jsx        → Entry point  
 ```
 
 ---
