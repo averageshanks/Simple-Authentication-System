@@ -69,7 +69,7 @@ Create a `.env` file inside `/backend`:
 PORT=3000
 MYSQL_HOST=localhost
 MYSQL_USER=root
-MYSQL_PASSWORD=What@12345
+MYSQL_PASSWORD=yourpassword
 MYSQL_DB_NAME=task_manager
 JWT_SECRET=supersecretkey
 
